@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jóvenes en Acción | Inscripción Tardía Ecuador</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#003366',
+                            lightBlue: '#1a568c',
+                            cyan: '#00a8cc',
+                            green: '#00a859',
+                            lightGreen: '#e8f8f0',
+                            accent: '#ffb703',
+                            bgGray: '#f4f7fa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fa; }
+        .step-active { background-color: #003366; color: white; border-color: #003366; }
+        .step-completed { background-color: #00a859; color: white; border-color: #00a859; }
+        .step-pending { background-color: #ffffff; color: #6b7280; border-color: #d1d5db; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
+        }
+        .toast-enter { animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .toast-exit { animation: slideOutRight 0.4s ease-in forwards; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 relative overflow-x-hidden">
+
+    <!-- TOP HEADER BAR -->
+    <div class="bg-brand-blue text-white text-xs py-3 px-4 sm:px-8 border-b border-blue-900/50 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col items-center justify-center text-center space-y-1">
+            <div class="tracking-[0.2em] font-extrabold text-sm sm:text-base uppercase text-white flex items-center justify-center gap-2">
+                <span>JÓVENES</span>
+                <span class="text-[10px] tracking-widest font-semibold text-blue-200 bg-white/10 px-2 py-0.5 rounded">EN ACCIÓN</span>
+            </div>
+            <div class="flex items-center justify-center space-x-2 text-xs text-blue-100 font-medium">
+                <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Inscripción tardía a módulos. Cupos disponibles 23.000 cupos Inscripciones hasta el 28 de Octubre</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN BRAND HEADER -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3 cursor-pointer select-none" onclick="handleTenTapsLogoClick()" title="Portal Oficial Jóvenes en Acción">
+                <div class="bg-brand-blue text-white p-2.5 rounded-xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-award text-2xl text-brand-accent"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-extrabold text-brand-blue tracking-tight leading-tight">
+                        Módulos Habilitados
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium">
+                        Sistema Nacional de Inscripciones
+                    </p>
+                </div>
+            </div>
+
+            <div id="user-session-badge" class="hidden flex items-center gap-3 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs">
+                <div class="w-8 h-8 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-user-check text-xs"></i>
+                </div>
+                <div>
+                    <span id="active-user-name" class="font-bold text-slate-800 block truncate max-w-[180px]">Nombre Apellido</span>
+                    <button onclick="logoutUser()" class="text-red-500 hover:underline font-semibold text-[10px] flex items-center gap-1">
+                        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- STEP TRACKER -->
+    <section id="step-tracker-section" class="bg-white border-b border-slate-200 shadow-inner py-6 px-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="relative flex items-center justify-between">
+                <div class="absolute top-1/2 left-0 w-full -translate-y-1/2 h-1 bg-slate-200 -z-0"></div>
+                <div id="progress-line" class="absolute top-1/2 left-0 -translate-y-1/2 h-1 bg-brand-blue transition-all duration-500 -z-0" style="width: 0%;"></div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="badge-step-1" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 step-active shadow-sm">1</div>
+                    <span id="text-step-1" class="text-xs font-semibold mt-2 text-brand-blue">1. Registro</span>
+                </div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="badge-step-2" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 step-pending shadow-sm">2</div>
+                    <span id="text-step-2" class="text-xs font-medium mt-2 text-slate-500">2. Ubicación</span>
+                </div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="badge-step-3" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 step-pending shadow-sm">3</div>
+                    <span id="text-step-3" class="text-xs font-medium mt-2 text-slate-500">3. Pago USDT</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- ALERT TOAST -->
+        <div id="alert-box" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border shadow-sm flex items-center justify-between fade-in">
+            <div class="flex items-center gap-3">
+                <i id="alert-icon" class="fa-solid text-lg"></i>
+                <span id="alert-message"></span>
+            </div>
+            <button onclick="closeAlert()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- PASO 1: REGISTRO Y LOGIN -->
+        <div id="step-1-content" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden max-w-xl mx-auto">
+                <div class="flex border-b border-slate-200 bg-slate-50">
+                    <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-4 text-center font-bold text-sm text-brand-blue border-b-2 border-brand-blue bg-white transition">
+                        <i class="fa-solid fa-user-plus mr-2"></i>Crear Cuenta
+                    </button>
+                    <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-4 text-center font-bold text-sm text-slate-500 hover:text-brand-blue transition">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i>Iniciar Sesión
+                    </button>
+                </div>
+
+                <div id="form-register-container" class="p-6 sm:p-8">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Inscripción Tardía - Paso 1 de 3</h2>
+                        <p class="text-xs text-slate-500 mt-1">Ingresa tus datos personales y correo único para quedar registrado.</p>
+                    </div>
+
+                    <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Nombres *</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                        <i class="fa-solid fa-user"></i>
+                                    </span>
+                                    <input type="text" id="reg-nombre" required placeholder="Tus nombres" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Apellidos *</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                        <i class="fa-solid fa-user"></i>
+                                    </span>
+                                    <input type="text" id="reg-apellido" required placeholder="Tus apellidos" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Número de Cédula *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </span>
+                                <input type="text" id="reg-cedula" required maxlength="10" placeholder="Ej: 1712345678" onblur="checkCedulaExistsOnBlur(this.value)" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Correo Electrónico *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </span>
+                                <input type="email" id="reg-email" required placeholder="ejemplo@correo.com" onblur="checkEmailExistsOnBlur(this.value)" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Contraseña *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                                <input type="password" id="reg-password" required placeholder="Ejemplo123!" class="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <button type="button" onclick="togglePasswordVisibility('reg-password', 'reg-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600">
+                                    <i id="reg-eye-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Repetir Contraseña *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-shield"></i>
+                                </span>
+                                <input type="password" id="reg-confirm-password" required placeholder="Ejemplo123!" class="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <button type="button" onclick="togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600">
+                                    <i id="reg-confirm-eye-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs">
+                                <span>Registrar y Pasar al Paso 2</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="form-login-container" class="p-6 sm:p-8 hidden">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Iniciar Sesión</h2>
+                        <p class="text-xs text-slate-500 mt-1">Accede con tu correo para continuar con tu proceso.</p>
+                    </div>
+
+                    <form id="form-login" onsubmit="handleLogin(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Correo Electrónico</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-user"></i>
+                                </span>
+                                <input type="text" id="login-email" required placeholder="tu@correo.com" class="w-full pl-10 pr-4 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Contraseña</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <button type="button" onclick="togglePasswordVisibility('login-password', 'login-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600">
+                                    <i id="login-eye-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                            <span>Ingresar al Sistema</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 2: UBICACIÓN ECUADOR -->
+        <div id="step-2-content" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 sm:p-8 max-w-xl mx-auto space-y-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                        Paso 2 de 3
+                    </span>
+                    <h2 class="text-2xl font-black text-slate-800 mt-3">Lugar de Residencia en Ecuador</h2>
+                    <p class="text-xs text-slate-500 mt-1">Selecciona tu provincia y cantón para asignar la acreditación territorial.</p>
+                </div>
+
+                <form id="form-location" onsubmit="handleLocationSubmit(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Provincia *</label>
+                        <select id="select-province" required onchange="handleProvinceChange()" class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-white transition">
+                            <option value="" disabled selected>-- Seleccione Provincia --</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Cantón *</label>
+                        <select id="select-canton" required disabled class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-slate-50 cursor-not-allowed transition">
+                            <option value="" disabled selected>-- Seleccione Primero Provincia --</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="goToStep(1)" class="w-1/3 border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold py-3.5 rounded-xl transition text-xs">
+                            Volver
+                        </button>
+                        <button type="submit" class="w-2/3 bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs">
+                            <span>Guardar y Continuar al Pago</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- PASO 3: PAGO USDT -->
+        <div id="step-3-content" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden max-w-2xl mx-auto">
+                <div class="bg-gradient-to-r from-brand-blue to-brand-lightBlue text-white p-6 sm:p-8">
+                    <span class="text-xs font-bold uppercase tracking-wider bg-white/20 text-white px-3 py-1 rounded-full border border-white/20">
+                        Paso Final - Paso 3
+                    </span>
+                    <h2 class="text-2xl font-black mt-3">Pago de $7,49 USDT - Aprobación de Acreditación</h2>
+                    <p class="text-xs text-blue-100 mt-1">Realiza la transferencia en criptomoneda USDT a la wallet oficial indicada a continuación.</p>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-emerald-800 font-bold uppercase block">Valor exacto de la inscripción</span>
+                            <span class="text-2xl font-black text-emerald-900">$7,49 USDT</span>
+                        </div>
+                        <i class="fa-solid fa-shield-halved text-emerald-600 text-3xl"></i>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                            DIRECCIÓN DE WALLET USDT (RED - TRC20):
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="wallet-address" readonly value="TFtX2tLdjqTnTdVAUfQ8YNACv6QUAK9LAy" class="w-full font-mono text-xs font-bold py-3 px-3 bg-slate-100 rounded-xl border border-slate-300 text-slate-800 focus:outline-none">
+                            <button type="button" onclick="copyWalletAddress()" class="bg-brand-blue hover:bg-blue-900 text-white font-bold px-4 py-3 rounded-xl text-xs transition flex items-center gap-1.5 whitespace-nowrap shadow">
+                                <i class="fa-solid fa-copy"></i>
+                                <span id="copy-btn-text">Copiar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="form-payment-usdt" onsubmit="handleUsdtPaymentSubmit(event)" class="space-y-5 pt-2">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                                SUBIR COMPROBANTE DE PAGO (CAPTURA O IMAGEN) *
+                            </label>
+                            <div class="border-2 border-dashed border-slate-300 hover:border-brand-blue rounded-xl p-6 text-center cursor-pointer transition relative bg-slate-50/50">
+                                <input type="file" id="receipt-file" accept="image/*" required onchange="handleFilePreview(this)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                <div id="receipt-upload-placeholder" class="space-y-2">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400"></i>
+                                    <p class="text-xs font-bold text-slate-700">Haz clic o arrastra tu comprobante aquí</p>
+                                    <p class="text-[10px] text-slate-400">Archivos JPG, PNG o WebP</p>
+                                </div>
+                                <div id="receipt-upload-success" class="hidden space-y-2">
+                                    <i class="fa-solid fa-circle-check text-3xl text-emerald-500"></i>
+                                    <p id="receipt-file-name" class="text-xs font-bold text-emerald-700 truncate"></p>
+                                    <span class="text-[10px] text-emerald-600 underline">Cambiar imagen</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button type="button" onclick="goToStep(2)" class="w-1/3 border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold py-3.5 rounded-xl transition text-xs">
+                                Volver
+                            </button>
+                            <button type="submit" class="w-2/3 bg-brand-green hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Enviar Comprobante y Finalizar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PORTAL DEL ESTUDIANTE -->
+        <div id="student-portal-content" class="hidden fade-in space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="text-xs font-bold text-brand-blue uppercase tracking-wider">Portal del Estudiante</span>
+                    <h2 class="text-2xl font-extrabold text-slate-800" id="portal-user-name-display">Nombre y Apellido</h2>
+                    <p class="text-xs text-slate-500" id="portal-user-sub-display">Cédula: S/N</p>
+                </div>
+                <div id="portal-status-badge-container"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="flex border-b border-slate-200 bg-slate-50 overflow-x-auto">
+                    <button id="tab-portal-home" onclick="switchPortalTab('home')" class="py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition">
+                        <i class="fa-solid fa-house mr-2"></i>Inicio / Estado
+                    </button>
+                    <button id="tab-portal-location" onclick="switchPortalTab('location')" class="py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition">
+                        <i class="fa-solid fa-location-dot mr-2"></i>Modificar Ubicación
+                    </button>
+                    <button id="tab-portal-bank" onclick="switchPortalTab('bank')" class="py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition">
+                        <i class="fa-solid fa-building-columns mr-2"></i>Cuenta Bancaria Ecuador
+                    </button>
+                </div>
+
+                <div class="p-6 sm:p-8">
+                    <!-- TAB INICIO -->
+                    <div id="portal-tab-home-content" class="space-y-6">
+                        <div id="portal-status-alert-box" class="p-5 rounded-2xl border text-xs leading-relaxed"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                                <span class="text-xs text-slate-500 font-bold uppercase">Ubicación Registrada</span>
+                                <span id="portal-home-location" class="text-sm font-extrabold text-slate-800 block mt-1">Cargando...</span>
+                            </div>
+                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                                <span class="text-xs text-slate-500 font-bold uppercase">Pago de inscripción</span>
+                                <span id="portal-home-payment-status" class="text-sm font-extrabold text-slate-800 block mt-1">$7,49 USDT</span>
+                            </div>
+                            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                                <span class="text-xs text-slate-500 font-bold uppercase">Cuenta Bancaria</span>
+                                <span id="portal-home-bank-status" class="text-sm font-extrabold text-slate-800 block mt-1">No configurada</span>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN DINÁMICA DE ENVÍO / REENVÍO DE PAGO -->
+                        <div id="portal-payment-action-section" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                            <h3 class="text-base font-bold text-slate-800" id="payment-section-title">Enviar Comprobante de Pago</h3>
+                            <p class="text-xs text-slate-500" id="payment-section-desc">Realiza tu pago de $7,49 USDT a la wallet oficial y sube tu comprobante para continuar.</p>
+                            
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-emerald-800 font-bold uppercase block">Valor exacto de la inscripción</span>
+                                    <span class="text-2xl font-black text-emerald-900">$7,49 USDT</span>
+                                </div>
+                                <i class="fa-solid fa-shield-halved text-emerald-600 text-3xl"></i>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                                    DIRECCIÓN DE WALLET USDT (RED - TRC20):
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <input type="text" readonly value="TFtX2tLdjqTnTdVAUfQ8YNACv6QUAK9LAy" class="w-full font-mono text-xs font-bold py-3 px-3 bg-slate-100 rounded-xl border border-slate-300 text-slate-800 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <form onsubmit="handlePortalResubmitPayment(event)" class="space-y-4 pt-2">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                                        SUBIR COMPROBANTE DE PAGO (CAPTURA O IMAGEN) *
+                                    </label>
+                                    <div class="border-2 border-dashed border-slate-300 hover:border-brand-blue rounded-xl p-6 text-center cursor-pointer transition relative bg-slate-50/50">
+                                        <input type="file" id="portal-receipt-file" accept="image/*" required onchange="handlePortalFilePreview(this)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                        <div id="portal-receipt-upload-placeholder" class="space-y-2">
+                                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400"></i>
+                                            <p class="text-xs font-bold text-slate-700">Haz clic o arrastra tu comprobante aquí</p>
+                                            <p class="text-[10px] text-slate-400">Archivos JPG, PNG o WebP</p>
+                                        </div>
+                                        <div id="portal-receipt-upload-success" class="hidden space-y-2">
+                                            <i class="fa-solid fa-circle-check text-3xl text-emerald-500"></i>
+                                            <p id="portal-receipt-file-name" class="text-xs font-bold text-emerald-700 truncate"></p>
+                                            <span class="text-[10px] text-emerald-600 underline">Cambiar imagen</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="w-full bg-brand-green hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span>Enviar Comprobante de Pago</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- TAB MODIFICAR UBICACIÓN -->
+                    <div id="portal-tab-location-content" class="hidden max-w-xl mx-auto space-y-5">
+                        <div id="location-modify-container">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Actualizar Lugar de Residencia</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Solo tienes permitida una modificación de ubicación en el sistema.</p>
+                            </div>
+
+                            <form id="form-update-location" onsubmit="handleUpdateLocationSubmit(event)" class="space-y-4 mt-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Provincia *</label>
+                                    <select id="portal-select-province" required onchange="handlePortalProvinceChange()" class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-white">
+                                        <option value="" disabled selected>-- Seleccione Provincia --</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Cantón *</label>
+                                    <select id="portal-select-canton" required class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-white">
+                                        <option value="" disabled selected>-- Seleccione Cantón --</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow transition text-xs flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                    <span>Guardar Nueva Ubicación</span>
+                                </button>
+                            </form>
+                        </div>
+                        <div id="location-locked-message" class="hidden p-5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+                            <i class="fa-solid fa-lock text-amber-600 mr-1.5"></i> <strong>Ubicación bloqueada:</strong> Ya has realizado tu única modificación permitida de ubicación en este sistema.
+                        </div>
+                    </div>
+
+                    <!-- TAB BANCO ECUADOR -->
+                    <div id="portal-tab-bank-content" class="hidden max-w-xl mx-auto space-y-5">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Datos Bancarios para Transferencias</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Ingresa tu cuenta bancaria nacional de Ecuador para recibir asignaciones o incentivos.</p>
+                        </div>
+
+                        <form id="form-bank-account" onsubmit="handleSaveBankAccount(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Institución Bancaria *</label>
+                                <select id="bank-name" required class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-white">
+                                    <option value="" disabled selected>-- Seleccione su Banco en Ecuador --</option>
+                                    <option value="Banco Pichincha">Banco Pichincha</option>
+                                    <option value="Banco Guayaquil">Banco Guayaquil</option>
+                                    <option value="Banco del Pacífico">Banco del Pacífico</option>
+                                    <option value="Produbanco">Produbanco</option>
+                                    <option value="Banco Bolivariano">Banco Bolivariano</option>
+                                    <option value="Banco Internacional">Banco Internacional</option>
+                                    <option value="Cooperativa JEP">Cooperativa JEP</option>
+                                    <option value="Cooperativa Juventud Ecuatoriana Progresista">Cooperativa Juventud Ecuatoriana Progresista</option>
+                                    <option value="Cooperativa Politécnica">Cooperativa Politécnica</option>
+                                    <option value="Mutualista Pichincha">Mutualista Pichincha</option>
+                                    <option value="Banco Solidario">Banco Solidario</option>
+                                    <option value="Otro Banco/Cooperativa">Otro Banco / Cooperativa Ecuador</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tipo de Cuenta *</label>
+                                    <select id="bank-type" required class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-white">
+                                        <option value="Ahorros">Cuenta de Ahorros</option>
+                                        <option value="Corriente">Cuenta Corriente</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Número de Cuenta *</label>
+                                    <input type="text" id="bank-number" required placeholder="Ej: 2200112233" class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Cédula del Titular *</label>
+                                <input type="text" id="bank-id-card" required placeholder="Ej: 1712345678" class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nombre Completo del Titular *</label>
+                                <input type="text" id="bank-owner-name" required placeholder="Nombres y Apellidos" class="w-full py-3 px-4 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                            </div>
+
+                            <button type="submit" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow transition text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Guardar Datos Bancarios</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- NOTIFICACIÓN FLOTANTE DINÁMICA -->
+    <div id="social-proof-toast" class="fixed bottom-24 right-4 bg-white/95 backdrop-blur-sm border border-slate-200 shadow-2xl rounded-2xl p-3.5 max-w-[270px] hidden z-40 transition-all">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-100 text-emerald-600 rounded-xl text-base flex-shrink-0 shadow-inner">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="text-[11px] leading-tight space-y-0.5">
+                <span class="font-bold text-slate-800 block truncate" id="proof-text">Carlos M. (Guayaquil)</span>
+                <span class="text-emerald-700 font-semibold text-[10px] block" id="proof-amount">Inscripción Aprobada $7,49 USDT</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ACCESO ADMIN -->
+    <div id="modal-admin-login" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 fade-in">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-brand-blue text-xl"></i>
+                    <h3 class="font-bold text-slate-800 text-base">Acceso Administrador Exclusivo</h3>
+                </div>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="form-admin-auth" onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Usuario Admin</label>
+                    <input type="text" id="admin-user-input" required placeholder="admin" class="w-full py-2.5 px-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Llave / Clave Secreta</label>
+                    <input type="password" id="admin-key-input" required placeholder="••••••••" class="w-full py-2.5 px-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Verificar Credenciales</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PANEL DASHBOARD ADMIN -->
+    <div id="modal-admin-dashboard" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-6xl w-full h-[90vh] flex flex-col shadow-2xl overflow-hidden fade-in">
+            <div class="bg-brand-blue text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-chart-line text-brand-accent text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-base leading-tight">Panel de Administración - Jóvenes en Acción</h3>
+                        <p class="text-xs text-blue-200">Wallet USDT: TFtX2tLdjqTnTdVAUfQ8YNACv6QUAK9LAy</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="closeAdminDashboard(true)" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión Admin
+                    </button>
+                    <button onclick="closeAdminDashboard(false)" class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-lg transition">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-grow space-y-6 bg-slate-50">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-blue-50 text-brand-blue rounded-lg text-2xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Total Registrados</span>
+                            <span id="metric-total" class="text-2xl font-black text-slate-800">0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-emerald-50 text-brand-green rounded-lg text-2xl">
+                            <i class="fa-solid fa-square-check"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Aprobados ($7.49 USDT)</span>
+                            <span id="metric-completed" class="text-2xl font-black text-brand-green">0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                        <div class="p-3 bg-amber-50 text-amber-600 rounded-lg text-2xl">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Recaudación USDT</span>
+                            <span id="metric-money" class="text-2xl font-black text-slate-800">$0.00 USDT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm">Listado de Registros Pendientes (Firestore Cloud)</h4>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="exportData()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-download"></i> Exportar Datos (JSON)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200 uppercase">
+                                    <th class="p-3">#</th>
+                                    <th class="p-3">Nombres y Apellidos</th>
+                                    <th class="p-3">Cédula</th>
+                                    <th class="p-3">Correo / Clave</th>
+                                    <th class="p-3">Ubicación</th>
+                                    <th class="p-3">Cuenta Bancaria</th>
+                                    <th class="p-3">Comprobante de Pago</th>
+                                    <th class="p-3">Estado</th>
+                                    <th class="p-3 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VISTA DE COMPROBANTE -->
+    <div id="modal-receipt-view" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-800 text-sm">Comprobante de Pago Adjunto</h3>
+                <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-slate-100 p-2 rounded-xl text-center flex items-center justify-center min-h-[200px]">
+                <img id="receipt-modal-img" src="" alt="Comprobante" class="max-h-80 object-contain rounded-lg shadow">
+            </div>
+            <button onclick="closeReceiptModal()" class="w-full bg-slate-800 text-white font-bold py-2 rounded-xl text-xs">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-500 mt-12">
+        <div class="max-w-7xl mx-auto space-y-2">
+            <p>© 2026 Jóvenes en Acción - Sistema Único de Acreditación Ecuador.</p>
+            <p class="text-[10px] text-slate-400">Inscripciones tardías sujetas a disponibilidad de cupos nacionales.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC & FIREBASE CLOUD SYNC -->
+    <script>
+        const firebaseConfig = {
+            projectId: "jovenes-69439"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        const STORAGE_KEY_ACTIVE_SESSION = 'app_jovenes_active_email_v4';
+
+        const ecuadorLocations = {
+            "Azuay": ["Cuenca", "Gualaceo", "Paute", "Santa Isabel", "Sigsig", "Chordeleg", "Girón", "Nabón", "Oña", "Pucará", "San Fernando", "Sevilla de Oro", "Guachapala", "El Pan", "Camilo Ponce Enríquez"],
+            "Bolívar": ["Guaranda", "Chillanes", "Chimbo", "Echeandía", "San Miguel", "Caluma", "Las Naves"],
+            "Cañar": ["Azogues", "Biblián", "Cañar", "La Troncal", "El Tambo", "Déleg", "Suscal"],
+            "Carchi": ["Tulcán", "Bolívar", "Espejo", "Mira", "Montúfar", "San Pedro de Huaca"],
+            "Chimborazo": ["Riobamba", "Alausí", "Colta", "Chambo", "Chunchi", "Guamote", "Guano", "Pallatanga", "Penipe", "Cumandá"],
+            "Cotopaxi": ["Latacunga", "La Maná", "Pangua", "Pujilí", "Salcedo", "Saquisilí", "Sigchos"],
+            "El Oro": ["Machala", "Arenillas", "Atahualpa", "Balsas", "Chilla", "El Guabo", "Huaquillas", "Las Lajas", "Marcabelí", "Pasaje", "Piñas", "Portovelo", "Santa Rosa", "Zaruma"],
+            "Esmeraldas": ["Esmeraldas", "Atacames", "Eloy Alfaro", "Muisne", "Quinindé", "San Lorenzo", "Rioverde"],
+            "Galápagos": ["San Cristóbal", "Isabela", "Santa Cruz"],
+            "Guayas": ["Guayaquil", "Alfredo Baquerizo Moreno", "Balao", "Balzar", "Colimes", "Daule", "Durán", "El Empalme", "El Triunfo", "Milagro", "Naranjal", "Naranjito", "Palestina", "Pedro Carbo", "Samborondón", "Santa Lucía", "Salitre", "San Jacinto de Yaguachi", "Playas", "Simón Bolívar", "Coronel Marcelino Maridueña", "Lomas de Sargentillo", "Nobol", "General Antonio Elizalde", "Isidro Ayora"],
+            "Imbabura": ["Ibarra", "Antonio Ante", "Cotacachi", "Otavalo", "Pimampiro", "San Miguel de Urcuquí"],
+            "Loja": ["Loja", "Calvas", "Catamayo", "Celica", "Chaguarpamba", "Espíndola", "Gonzanamá", "Macará", "Paltas", "Puyango", "Saraguro", "Sozoranga", "Zapotillo", "Pindal", "Quilanga", "Olmedo"],
+            "Los Ríos": ["Babahoyo", "Baba", "Buena Fe", "Mocache", "Montalvo", "Palenque", "Puebloviejo", "Quevedo", "Urdaneta", "Valencia", "Ventanas", "Vinces", "Quinsaloma"],
+            "Manabí": ["Portoviejo", "24 de Mayo", "Bolívar", "Chone", "El Carmen", "Flavio Alfaro", "Jipijapa", "Junín", "Manta", "Montecristi", "Paján", "Pichincha", "Rocafuerte", "Santa Ana", "Sucre", "Tosagua", "Jama", "Jaramijó", "Puerto López", "Pedernales", "Olmedo", "San Vicente"],
+            "Morona Santiago": ["Macas", "Gualaquiza", "Limón Indanza", "Palora", "Santiago", "Sucúa", "Huamboya", "San Juan Bosco", "Taisha", "Logroño", "Pablo Sexto", "Tiwintza"],
+            "Napo": ["Tena", "Archidona", "El Chaco", "Quijos", "Carlos Julio Arosemena Tola"],
+            "Orellana": ["Puerto Francisco de Orellana", "Aguarico", "La Joya de los Sachas", "Loreto"],
+            "Pastaza": ["Puyo", "Arajuno", "Mera", "Santa Clara"],
+            "Pichincha": ["Quito", "Cayambe", "Mejía", "Pedro Moncayo", "Rumiñahui", "San Miguel de Los Bancos", "Pedro Vicente Maldonado", "Puerto Quito"],
+            "Santa Elena": ["Santa Elena", "La Libertad", "Salinas"],
+            "Santo Domingo de los Tsáchilas": ["Santo Domingo", "La Concordia"],
+            "Sucumbíos": ["Nueva Loja", "Cascales", "Cuyabeno", "Gonzalo Pizarro", "Lago Agrio", "Putumayo", "Shushufindi", "Sucumbíos"],
+            "Tungurahua": ["Ambato", "Baños de Agua Santa", "Cevallos", "Mocha", "Patate", "Quero", "San Pedro de Pelileo", "Santiago de Píllaro", "Tisaleo"],
+            "Zamora Chinchipe": ["Zamora", "Chinchipe", "Nangaritza", "Yacuambi", "Yantzaza", "El Pangui", "Palanda", "Centinela del Cóndor", "Paquisha"]
+        };
+
+        const ADMIN_USER = "admin";
+        const ADMIN_SECRET_KEY = "admin123";
+
+        const diverseSimulations = [
+            { name: "Esteban J.", city: "Cuenca", amount: "$7,49 USDT" },
+            { name: "Valeria M.", city: "Quito", amount: "$7,49 USDT" },
+            { name: "Byron R.", city: "Manta", amount: "$7,49 USDT" },
+            { name: "Karelys V.", city: "Portoviejo", amount: "$7,49 USDT" },
+            { name: "Mateo S.", city: "Guayaquil", amount: "$7,49 USDT" },
+            { name: "Daniela P.", city: "Ambato", amount: "$7,49 USDT" },
+            { name: "Fabricio L.", city: "Loja", amount: "$7,49 USDT" },
+            { name: "Josselyn C.", city: "Machala", amount: "$7,49 USDT" },
+            { name: "Xavier T.", city: "Riobamba", amount: "$7,49 USDT" },
+            { name: "Dayana M.", city: "Esmeraldas", amount: "$7,49 USDT" },
+            { name: "Alexander G.", city: "Santo Domingo", amount: "$7,49 USDT" },
+            { name: "Tatiana B.", city: "Ibarra", amount: "$7,49 USDT" },
+            { name: "Leonardo P.", city: "Babahoyo", amount: "$7,49 USDT" },
+            { name: "Génesis R.", city: "Milagro", amount: "$7,49 USDT" },
+            { name: "Franklin Z.", city: "Latacunga", amount: "$7,49 USDT" },
+            { name: "Samanta V.", city: "Quevedo", amount: "$7,49 USDT" }
+        ];
+
+        let currentStep = 1;
+        let currentUser = null;
+        let isAdminLoggedIn = false;
+        let uploadedReceiptBase64 = null;
+        let portalUploadedReceiptBase64 = null;
+        let logoTapCount = 0;
+        let logoTapTimer = null;
+        let lastSimulationIndex = -1;
+
+        window.onload = function() {
+            loadProvinces();
+            loadPortalProvinces();
+            setupKeyboardShortcuts();
+            startSocialProofWidget();
+            restoreActiveSession();
+        };
+
+        async function restoreActiveSession() {
+            const activeEmail = localStorage.getItem(STORAGE_KEY_ACTIVE_SESSION);
+            if (activeEmail) {
+                try {
+                    const docRef = db.collection('usuarios').doc(activeEmail.trim().toLowerCase());
+                    const doc = await docRef.get();
+                    if (doc.exists) {
+                        currentUser = doc.data();
+                        updateSessionBadge();
+                        docRef.onSnapshot((updatedDoc) => {
+                            if (updatedDoc.exists) {
+                                currentUser = updatedDoc.data();
+                                if (document.getElementById('student-portal-content') && !document.getElementById('student-portal-content').classList.contains('hidden')) {
+                                    renderPortalHome();
+                                }
+                            }
+                        });
+                        openStudentPortal();
+                    }
+                } catch (e) {
+                    console.error("Error restaurando sesión:", e);
+                }
+            }
+        }
+
+        function handleTenTapsLogoClick() {
+            logoTapCount++;
+            clearTimeout(logoTapTimer);
+            if (logoTapCount >= 10) {
+                logoTapCount = 0;
+                openAdminModal();
+            } else {
+                logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 2500);
+            }
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                    e.preventDefault();
+                    openAdminModal();
+                }
+            });
+        }
+
+        function openAdminModal() {
+            document.getElementById('admin-user-input').value = '';
+            document.getElementById('admin-key-input').value = '';
+            document.getElementById('modal-admin-login').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('modal-admin-login').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user-input').value.trim();
+            const key = document.getElementById('admin-key-input').value;
+            if (user === ADMIN_USER && key === ADMIN_SECRET_KEY) {
+                isAdminLoggedIn = true;
+                closeAdminModal();
+                openAdminDashboard();
+            } else {
+                showAlert('Credenciales de administrador incorrectas.', 'error');
+            }
+        }
+
+        async function openAdminDashboard() {
+            if (!isAdminLoggedIn) {
+                openAdminModal();
+                return;
+            }
+            await renderAdminDashboard();
+            document.getElementById('modal-admin-dashboard').classList.remove('hidden');
+        }
+
+        function closeAdminDashboard(forceLogoutAdmin = false) {
+            document.getElementById('modal-admin-dashboard').classList.add('hidden');
+            if (forceLogoutAdmin) {
+                isAdminLoggedIn = false;
+            }
+        }
+
+        function updateSessionBadge() {
+            const badge = document.getElementById('user-session-badge');
+            const nameSpan = document.getElementById('active-user-name');
+            if (currentUser) {
+                const fullName = (currentUser.nombre || currentUser.apellido) ? `${currentUser.nombre || ''} ${currentUser.apellido || ''}` : currentUser.email;
+                nameSpan.textContent = fullName;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function loadProvinces() {
+            const selectProv = document.getElementById('select-province');
+            if (!selectProv) return;
+            Object.keys(ecuadorLocations).sort().forEach(prov => {
+                const opt = document.createElement('option');
+                opt.value = prov;
+                opt.textContent = prov;
+                selectProv.appendChild(opt);
+            });
+        }
+
+        function loadPortalProvinces() {
+            const selectProv = document.getElementById('portal-select-province');
+            if (!selectProv) return;
+            selectProv.innerHTML = '<option value="" disabled selected>-- Seleccione Provincia --</option>';
+            Object.keys(ecuadorLocations).sort().forEach(prov => {
+                const opt = document.createElement('option');
+                opt.value = prov;
+                opt.textContent = prov;
+                selectProv.appendChild(opt);
+            });
+        }
+
+        function handleProvinceChange() {
+            const selectProv = document.getElementById('select-province');
+            const selectCanton = document.getElementById('select-canton');
+            const selectedProv = selectProv.value;
+
+            selectCanton.innerHTML = '<option value="" disabled selected>-- Seleccione Cantón --</option>';
+            if (selectedProv && ecuadorLocations[selectedProv]) {
+                selectCanton.disabled = false;
+                selectCanton.classList.remove('bg-slate-50', 'cursor-not-allowed');
+                selectCanton.classList.add('bg-white');
+
+                ecuadorLocations[selectedProv].sort().forEach(canton => {
+                    const opt = document.createElement('option');
+                    opt.value = canton;
+                    opt.textContent = canton;
+                    selectCanton.appendChild(opt);
+                });
+            }
+        }
+
+        function handlePortalProvinceChange() {
+            const selectProv = document.getElementById('portal-select-province');
+            const selectCanton = document.getElementById('portal-select-canton');
+            const selectedProv = selectProv.value;
+
+            selectCanton.innerHTML = '<option value="" disabled selected>-- Seleccione Cantón --</option>';
+            if (selectedProv && ecuadorLocations[selectedProv]) {
+                ecuadorLocations[selectedProv].sort().forEach(canton => {
+                    const opt = document.createElement('option');
+                    opt.value = canton;
+                    opt.textContent = canton;
+                    selectCanton.appendChild(opt);
+                });
+            }
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function switchAuthTab(tab) {
+            const regContainer = document.getElementById('form-register-container');
+            const loginContainer = document.getElementById('form-login-container');
+            const tabRegBtn = document.getElementById('tab-register-btn');
+            const tabLoginBtn = document.getElementById('tab-login-btn');
+
+            if (tab === 'register') {
+                regContainer.classList.remove('hidden');
+                loginContainer.classList.add('hidden');
+                tabRegBtn.className = 'flex-1 py-4 text-center font-bold text-sm text-brand-blue border-b-2 border-brand-blue bg-white transition';
+                tabLoginBtn.className = 'flex-1 py-4 text-center font-bold text-sm text-slate-500 hover:text-brand-blue transition';
+            } else {
+                regContainer.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
+                tabRegBtn.className = 'flex-1 py-4 text-center font-bold text-sm text-slate-500 hover:text-brand-blue transition';
+                tabLoginBtn.className = 'flex-1 py-4 text-center font-bold text-sm text-brand-blue border-b-2 border-brand-blue bg-white transition';
+            }
+        }
+
+        async function checkEmailExistsOnBlur(emailVal) {
+            const email = emailVal.trim().toLowerCase();
+            if (!email) return;
+
+            try {
+                const docRef = db.collection('usuarios').doc(email);
+                const doc = await docRef.get();
+                if (doc.exists) {
+                    showAlert('Este correo ya está registrado en el sistema. Por favor inicia sesión.', 'error');
+                    switchAuthTab('login');
+                    document.getElementById('login-email').value = email;
+                }
+            } catch (e) {
+                console.error("Error verificando correo:", e);
+            }
+        }
+
+        async function checkCedulaExistsOnBlur(cedulaVal) {
+            const cedula = cedulaVal.trim();
+            if (!cedula) return;
+
+            try {
+                const snapshot = await db.collection('usuarios').where('cedula', '==', cedula).get();
+                if (!snapshot.empty) {
+                    showAlert('Este número de cédula ya se encuentra registrado en el sistema.', 'error');
+                    document.getElementById('reg-cedula').value = '';
+                }
+            } catch (e) {
+                console.error("Error verificando cédula:", e);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const apellido = document.getElementById('reg-apellido').value.trim();
+            const cedula = document.getElementById('reg-cedula').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const pass = document.getElementById('reg-password').value;
+            const confirmPass = document.getElementById('reg-confirm-password').value;
+
+            if (pass !== confirmPass) {
+                showAlert('Las contraseñas ingresadas no coinciden.', 'error');
+                return;
+            }
+
+            try {
+                const cedulaSnapshot = await db.collection('usuarios').where('cedula', '==', cedula).get();
+                if (!cedulaSnapshot.empty) {
+                    showAlert('Este número de cédula ya se encuentra registrado.', 'error');
+                    return;
+                }
+
+                const docRef = db.collection('usuarios').doc(email);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    showAlert('Este correo ya se encuentra registrado. Por favor inicia sesión.', 'error');
+                    switchAuthTab('login');
+                    document.getElementById('login-email').value = email;
+                    return;
+                }
+
+                const newUser = {
+                    id: 'EC-' + Math.floor(100000 + Math.random() * 900000),
+                    nombre: nombre,
+                    apellido: apellido,
+                    cedula: cedula,
+                    email: email,
+                    password: pass,
+                    province: '',
+                    canton: '',
+                    completedStep: 1,
+                    status: 'Pendiente',
+                    receipt: null,
+                    bankAccount: null,
+                    locationModifiedCount: 0,
+                    date: new Date().toLocaleString('es-EC')
+                };
+
+                await docRef.set(newUser, { merge: true });
+
+                currentUser = newUser;
+                localStorage.setItem(STORAGE_KEY_ACTIVE_SESSION, currentUser.email);
+                updateSessionBadge();
+
+                showAlert('¡Registro completado! Continúa al Paso 2.', 'success');
+                goToStep(2);
+            } catch (err) {
+                console.error("Error en registro:", err);
+                showAlert('Error de conexión con la nube.', 'error');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const pass = document.getElementById('login-password').value;
+
+            try {
+                const docRef = db.collection('usuarios').doc(email);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    const userData = doc.data();
+                    if (userData.password === pass) {
+                        currentUser = userData;
+                        localStorage.setItem(STORAGE_KEY_ACTIVE_SESSION, currentUser.email);
+                        updateSessionBadge();
+
+                        showAlert('Sesión iniciada correctamente.', 'success');
+                        
+                        docRef.onSnapshot((updatedDoc) => {
+                            if (updatedDoc.exists) {
+                                currentUser = updatedDoc.data();
+                                if (document.getElementById('student-portal-content') && !document.getElementById('student-portal-content').classList.contains('hidden')) {
+                                    renderPortalHome();
+                                }
+                            }
+                        });
+
+                        openStudentPortal();
+                    } else {
+                        showAlert('Contraseña incorrecta.', 'error');
+                    }
+                } else {
+                    showAlert('El correo no se encuentra registrado.', 'error');
+                }
+            } catch (err) {
+                console.error("Error en login:", err);
+                showAlert('Error al conectar con la base de datos.', 'error');
+            }
+        }
+
+        async function handleLocationSubmit(e) {
+            e.preventDefault();
+            const province = document.getElementById('select-province').value;
+            const canton = document.getElementById('select-canton').value;
+
+            if (currentUser) {
+                currentUser.province = province;
+                currentUser.canton = canton;
+                currentUser.completedStep = 2;
+                await updateCurrentUserDataInCloud();
+            }
+
+            goToStep(3);
+        }
+
+        async function updateCurrentUserDataInCloud() {
+            if (!currentUser) return;
+            try {
+                await db.collection('usuarios').doc(currentUser.email.trim().toLowerCase()).set(currentUser, { merge: true });
+            } catch (e) {
+                console.error("Error actualizando en nube:", e);
+                showAlert('Error al guardar en la base de datos.', 'error');
+            }
+        }
+
+        function copyWalletAddress() {
+            const copyText = document.getElementById("wallet-address");
+            copyText.select();
+            document.execCommand("copy");
+            const btnText = document.getElementById('copy-btn-text');
+            btnText.textContent = "¡Copiado!";
+            setTimeout(() => { btnText.textContent = "Copiar"; }, 2000);
+        }
+
+        function handleFilePreview(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedReceiptBase64 = e.target.result;
+                    document.getElementById('receipt-upload-placeholder').classList.add('hidden');
+                    document.getElementById('receipt-upload-success').classList.remove('hidden');
+                    document.getElementById('receipt-file-name').textContent = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handlePortalFilePreview(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    portalUploadedReceiptBase64 = e.target.result;
+                    document.getElementById('portal-receipt-upload-placeholder').classList.add('hidden');
+                    document.getElementById('portal-receipt-upload-success').classList.remove('hidden');
+                    document.getElementById('portal-receipt-file-name').textContent = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function handleUsdtPaymentSubmit(e) {
+            e.preventDefault();
+            if (!uploadedReceiptBase64) {
+                showAlert('Por favor adjunta la captura de tu comprobante de pago.', 'error');
+                return;
+            }
+
+            if (currentUser) {
+                currentUser.status = 'EnVerificacion';
+                currentUser.receipt = uploadedReceiptBase64;
+                currentUser.completedStep = 3;
+                await updateCurrentUserDataInCloud();
+            }
+
+            showAlert('Comprobante enviado. Ingresando a tu Portal de Estudiante...', 'success');
+            openStudentPortal();
+        }
+
+        async function handlePortalResubmitPayment(e) {
+            e.preventDefault();
+            if (!portalUploadedReceiptBase64) {
+                showAlert('Por favor adjunta la captura de tu comprobante de pago.', 'error');
+                return;
+            }
+
+            if (currentUser) {
+                currentUser.status = 'EnVerificacion';
+                currentUser.receipt = portalUploadedReceiptBase64;
+                await updateCurrentUserDataInCloud();
+            }
+
+            showAlert('Comprobante reenviado correctamente. Quedando en revisión.', 'success');
+            renderPortalHome();
+        }
+
+        function openStudentPortal() {
+            document.getElementById('step-tracker-section').classList.add('hidden');
+            document.getElementById('step-1-content').classList.add('hidden');
+            document.getElementById('step-2-content').classList.add('hidden');
+            document.getElementById('step-3-content').classList.add('hidden');
+            document.getElementById('student-portal-content').classList.remove('hidden');
+
+            const fullName = (currentUser.nombre || currentUser.apellido) ? `${currentUser.nombre || ''} ${currentUser.apellido || ''}` : currentUser.email;
+            document.getElementById('portal-user-name-display').textContent = fullName;
+            document.getElementById('portal-user-sub-display').textContent = `Cédula: ${currentUser.cedula || 'S/N'} | Correo: ${currentUser.email}`;
+
+            renderPortalHome();
+            switchPortalTab('home');
+        }
+
+        function switchPortalTab(tab) {
+            const homeBtn = document.getElementById('tab-portal-home');
+            const locationBtn = document.getElementById('tab-portal-location');
+            const bankBtn = document.getElementById('tab-portal-bank');
+
+            const homeContent = document.getElementById('portal-tab-home-content');
+            const locationContent = document.getElementById('portal-tab-location-content');
+            const bankContent = document.getElementById('portal-tab-bank-content');
+
+            homeContent.classList.add('hidden');
+            locationContent.classList.add('hidden');
+            bankContent.classList.add('hidden');
+
+            homeBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
+            if(locationBtn) locationBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
+            bankBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
+
+            if (tab === 'home') {
+                homeContent.classList.remove('hidden');
+                homeBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
+            } else if (tab === 'location') {
+                locationContent.classList.remove('hidden');
+                if(locationBtn) locationBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
+                populateLocationForm();
+            } else if (tab === 'bank') {
+                bankContent.classList.remove('hidden');
+                bankBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
+                populateBankForm();
+            }
+        }
+
+        function populateLocationForm() {
+            if (currentUser) {
+                const selectProv = document.getElementById('portal-select-province');
+                const formContainer = document.getElementById('location-modify-container');
+                const lockedMsg = document.getElementById('location-locked-message');
+
+                if ((currentUser.locationModifiedCount || 0) >= 1) {
+                    formContainer.classList.add('hidden');
+                    lockedMsg.classList.remove('hidden');
+                } else {
+                    formContainer.classList.remove('hidden');
+                    lockedMsg.classList.add('hidden');
+                    if (currentUser.province) {
+                        selectProv.value = currentUser.province;
+                        handlePortalProvinceChange();
+                        document.getElementById('portal-select-canton').value = currentUser.canton || '';
+                    }
+                }
+            }
+        }
+
+        async function handleUpdateLocationSubmit(e) {
+            e.preventDefault();
+            if ((currentUser.locationModifiedCount || 0) >= 1) {
+                showAlert('Ya has modificado tu ubicación la única vez permitida.', 'error');
+                return;
+            }
+
+            const province = document.getElementById('portal-select-province').value;
+            const canton = document.getElementById('portal-select-canton').value;
+
+            if (currentUser) {
+                currentUser.province = province;
+                currentUser.canton = canton;
+                currentUser.locationModifiedCount = (currentUser.locationModifiedCount || 0) + 1;
+                await updateCurrentUserDataInCloud();
+                showAlert('Ubicación actualizada correctamente.', 'success');
+                renderPortalHome();
+                switchPortalTab('home');
+            }
+        }
+
+        function renderPortalHome() {
+            const badgeContainer = document.getElementById('portal-status-badge-container');
+            const locationSpan = document.getElementById('portal-home-location');
+            const paymentStatusSpan = document.getElementById('portal-home-payment-status');
+            const bankStatusSpan = document.getElementById('portal-home-bank-status');
+            const alertBox = document.getElementById('portal-status-alert-box');
+            const paymentActionSection = document.getElementById('portal-payment-action-section');
+
+            if (currentUser.province && currentUser.canton) {
+                locationSpan.textContent = `${currentUser.province}, ${currentUser.canton}`;
+                locationSpan.className = "text-sm font-extrabold text-slate-800 block mt-1";
+            } else {
+                locationSpan.textContent = 'No registrada';
+                locationSpan.className = "text-sm font-extrabold text-amber-600 block mt-1";
+            }
+
+            if (currentUser.bankAccount) {
+                bankStatusSpan.textContent = `${currentUser.bankAccount.bankName} (${currentUser.bankAccount.accountType})`;
+                bankStatusSpan.className = "text-sm font-extrabold text-emerald-600 block mt-1";
+            } else {
+                bankStatusSpan.textContent = 'No configurada';
+                bankStatusSpan.className = "text-sm font-extrabold text-amber-600 block mt-1";
+            }
+
+            if (currentUser.status === 'Aprobado') {
+                badgeContainer.innerHTML = `<span class="bg-emerald-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow border border-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Inscripción Aprobada</span>`;
+                paymentStatusSpan.textContent = "Aprobado";
+                paymentStatusSpan.className = "text-sm font-extrabold text-emerald-600 block mt-1";
+
+                alertBox.className = "p-5 rounded-2xl border text-xs leading-relaxed bg-emerald-50 border-emerald-200 text-emerald-900";
+                alertBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5"></i>
+                        <div>
+                            <strong class="block text-sm">Inscripción Aprobada</strong>
+                            Espere asignaciones y acreditación.
+                        </div>
+                    </div>
+                `;
+                paymentActionSection.classList.add('hidden');
+            } else if (currentUser.status === 'Rechazado') {
+                badgeContainer.innerHTML = `<span class="bg-red-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow border border-red-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> Pago Rechazado</span>`;
+                paymentStatusSpan.textContent = "Rechazado";
+                paymentStatusSpan.className = "text-sm font-extrabold text-red-600 block mt-1";
+
+                alertBox.className = "p-5 rounded-2xl border text-xs leading-relaxed bg-red-50 border-red-200 text-red-900";
+                alertBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-red-600 text-lg mt-0.5"></i>
+                        <div>
+                            <strong class="block text-sm">Tu comprobante de pago fue rechazado por la administración</strong>
+                            Por favor verifica tu transferencia de USDT y vuelve a enviar un comprobante válido utilizando el formulario de abajo.
+                        </div>
+                    </div>
+                `;
+                paymentActionSection.classList.remove('hidden');
+                document.getElementById('payment-section-title').textContent = "Volver a Enviar Comprobante de Pago";
+            } else if (currentUser.status === 'EnVerificacion' && currentUser.receipt) {
+                badgeContainer.innerHTML = `<span class="bg-amber-400 text-amber-950 font-extrabold text-xs px-4 py-2 rounded-xl shadow border border-amber-300 flex items-center gap-1.5 animate-pulse"><i class="fa-solid fa-clock"></i> Verificación en Espera</span>`;
+                paymentStatusSpan.textContent = "En revisión";
+                paymentStatusSpan.className = "text-sm font-extrabold text-amber-600 block mt-1";
+
+                alertBox.className = "p-5 rounded-2xl border text-xs leading-relaxed bg-amber-50 border-amber-200 text-amber-900";
+                alertBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-clock-rotate-left text-amber-600 text-lg mt-0.5"></i>
+                        <div>
+                            <strong class="block text-sm">Comprobante USDT bajo verificación administrativa</strong>
+                            Hemos recibido tu comprobante de $7,49 USDT a la wallet <span class="font-mono bg-amber-100 px-1 rounded">TFtX2t...LAy</span>. Mientras esperas, puedes registrar tu <strong>Cuenta Bancaria</strong>.
+                        </div>
+                    </div>
+                `;
+                paymentActionSection.classList.add('hidden');
+            } else {
+                badgeContainer.innerHTML = `<span class="bg-amber-400 text-amber-950 font-extrabold text-xs px-4 py-2 rounded-xl shadow border border-amber-300 flex items-center gap-1.5 animate-pulse"><i class="fa-solid fa-clock"></i> Pendiente de Pago</span>`;
+                paymentStatusSpan.textContent = "Pendiente";
+                paymentStatusSpan.className = "text-sm font-extrabold text-amber-600 block mt-1";
+
+                alertBox.className = "p-5 rounded-2xl border text-xs leading-relaxed bg-amber-50 border-amber-200 text-amber-900";
+                alertBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
+                        <div>
+                            <strong class="block text-sm">Aún no has enviado tu pago de inscripción</strong>
+                            Realiza tu transferencia de $7,49 USDT y envía tu comprobante en la sección inferior de esta página.
+                        </div>
+                    </div>
+                `;
+                paymentActionSection.classList.remove('hidden');
+                document.getElementById('payment-section-title').textContent = "Enviar Comprobante de Pago";
+            }
+        }
+
+        function populateBankForm() {
+            if (currentUser && currentUser.bankAccount) {
+                document.getElementById('bank-name').value = currentUser.bankAccount.bankName || '';
+                document.getElementById('bank-type').value = currentUser.bankAccount.accountType || 'Ahorros';
+                document.getElementById('bank-number').value = currentUser.bankAccount.accountNumber || '';
+                document.getElementById('bank-id-card').value = currentUser.bankAccount.idCard || '';
+                document.getElementById('bank-owner-name').value = currentUser.bankAccount.ownerName || '';
+            }
+        }
+
+        async function handleSaveBankAccount(e) {
+            e.preventDefault();
+            const bankData = {
+                bankName: document.getElementById('bank-name').value,
+                accountType: document.getElementById('bank-type').value,
+                accountNumber: document.getElementById('bank-number').value.trim(),
+                idCard: document.getElementById('bank-id-card').value.trim(),
+                ownerName: document.getElementById('bank-owner-name').value.trim()
+            };
+
+            currentUser.bankAccount = bankData;
+            await updateCurrentUserDataInCloud();
+
+            showAlert('Cuenta bancaria guardada correctamente.', 'success');
+            renderPortalHome();
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            updateStepUI(step);
+
+            document.getElementById('student-portal-content').classList.add('hidden');
+            document.getElementById('step-tracker-section').classList.remove('hidden');
+
+            document.getElementById('step-1-content').classList.add('hidden');
+            document.getElementById('step-2-content').classList.add('hidden');
+            document.getElementById('step-3-content').classList.add('hidden');
+
+            if (step === 1) document.getElementById('step-1-content').classList.remove('hidden');
+            if (step === 2) document.getElementById('step-2-content').classList.remove('hidden');
+            if (step === 3) document.getElementById('step-3-content').classList.remove('hidden');
+        }
+
+        function updateStepUI(step) {
+            const line = document.getElementById('progress-line');
+            if (step === 1) {
+                line.style.width = '0%';
+                setStepStyle('badge-step-1', 'text-step-1', 'active');
+                setStepStyle('badge-step-2', 'text-step-2', 'pending');
+                setStepStyle('badge-step-3', 'text-step-3', 'pending');
+            } else if (step === 2) {
+                line.style.width = '50%';
+                setStepStyle('badge-step-1', 'text-step-1', 'completed');
+                setStepStyle('badge-step-2', 'text-step-2', 'active');
+                setStepStyle('badge-step-3', 'text-step-3', 'pending');
+            } else if (step === 3) {
+                line.style.width = '100%';
+                setStepStyle('badge-step-1', 'text-step-1', 'completed');
+                setStepStyle('badge-step-2', 'text-step-2', 'completed');
+                setStepStyle('badge-step-3', 'text-step-3', 'active');
+            }
+        }
+
+        function setStepStyle(badgeId, textId, state) {
+            const badge = document.getElementById(badgeId);
+            const text = document.getElementById(textId);
+            badge.className = "w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-sm ";
+            text.className = "text-xs font-semibold mt-2 ";
+
+            if (state === 'active') {
+                badge.classList.add('step-active');
+                text.classList.add('text-brand-blue');
+            } else if (state === 'completed') {
+                badge.classList.add('step-completed');
+                badge.innerHTML = '<i class="fa-solid fa-check"></i>';
+                text.classList.add('text-brand-green');
+            } else {
+                badge.classList.add('step-pending');
+                text.classList.add('text-slate-500');
+            }
+        }
+
+        async function renderAdminDashboard() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            try {
+                const snapshot = await db.collection('usuarios').get();
+                let users = [];
+                snapshot.forEach(doc => users.push(doc.data()));
+
+                let totalApproved = 0;
+                let visibleUsers = users.filter(user => user.status !== 'Aprobado');
+
+                users.forEach(user => {
+                    if (user.status === 'Aprobado') totalApproved++;
+                });
+
+                visibleUsers.forEach((user, index) => {
+                    const bankInfo = user.bankAccount 
+                        ? `<div class="text-[10px]"><strong>${user.bankAccount.bankName}</strong><br>${user.bankAccount.accountType}: ${user.bankAccount.accountNumber}<br>CI: ${user.bankAccount.idCard}</div>`
+                        : '<span class="text-slate-400 italic text-[10px]">No ingresada</span>';
+
+                    const fullName = (user.nombre || user.apellido) ? `${user.nombre || ''} ${user.apellido || ''}` : '<span class="text-slate-400 italic">No especificado</span>';
+                    const cedulaText = user.cedula ? user.cedula : '<span class="text-slate-400 italic">S/N</span>';
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition";
+                    tr.innerHTML = `
+                        <td class="p-3 font-mono text-slate-500">${index + 1}</td>
+                        <td class="p-3 font-bold text-slate-800">${fullName}</td>
+                        <td class="p-3 font-mono text-slate-700">${cedulaText}</td>
+                        <td class="p-3">
+                            <span class="font-bold text-slate-800 block">${user.email}</span>
+                            <span class="font-mono text-[10px] text-slate-500 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">Clave: ${user.password}</span>
+                        </td>
+                        <td class="p-3 text-slate-600">${user.province ? `${user.province}, ${user.canton}` : '<span class="text-slate-400">Paso 1</span>'}</td>
+                        <td class="p-3">${bankInfo}</td>
+                        <td class="p-3">
+                            ${user.receipt 
+                                ? `<div class="flex items-center gap-2"><img src="${user.receipt}" alt="Comprobante" class="w-12 h-12 object-cover rounded-lg border shadow cursor-pointer hover:scale-105 transition" onclick="viewReceipt('${user.email}')"><button type="button" onclick="viewReceipt('${user.email}')" class="bg-blue-50 text-brand-blue hover:bg-blue-100 font-bold px-2 py-1 rounded text-[10px] border border-blue-200 transition flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-eye"></i> Ampliar</button></div>` 
+                                : '<span class="text-slate-400 italic text-[10px]">Sin adjunto</span>'}
+                        </td>
+                        <td class="p-3">
+                            ${user.status === 'Rechazado'
+                                ? '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-bold text-[10px]"><i class="fa-solid fa-xmark mr-0.5"></i> Rechazado</span>'
+                                : user.status === 'EnVerificacion'
+                                ? '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold text-[10px]"><i class="fa-solid fa-clock mr-0.5"></i> En Revisión</span>'
+                                : '<span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold text-[10px]">Pendiente</span>'}
+                        </td>
+                        <td class="p-3 text-center">
+                            <div class="flex justify-center gap-1">
+                                <button type="button" onclick="adminChangeStatus('${user.email}', 'Aprobado')" title="Aprobar Pago USDT" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-1 rounded text-[10px] transition shadow cursor-pointer">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button type="button" onclick="adminChangeStatus('${user.email}', 'Rechazado')" title="Rechazar Pago USDT" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2 py-1 rounded text-[10px] transition shadow cursor-pointer">
+                                    <i class="fa-solid fa-ban"></i>
+                                </button>
+                                <button type="button" onclick="adminDeleteUser('${user.email}')" title="Eliminar Cuenta" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-[10px] transition shadow cursor-pointer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                if (visibleUsers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">No existen registros pendientes en el panel.</td></tr>`;
+                }
+
+                document.getElementById('metric-total').textContent = users.length;
+                document.getElementById('metric-completed').textContent = totalApproved;
+                document.getElementById('metric-money').textContent = `$${(totalApproved * 7.49).toFixed(2)} USDT`;
+            } catch (e) {
+                console.error("Error cargando dashboard:", e);
+            }
+        }
+
+        async function adminChangeStatus(email, newStatus) {
+            try {
+                const docRef = db.collection('usuarios').doc(email.trim().toLowerCase());
+                await docRef.set({ status: newStatus }, { merge: true });
+
+                if (currentUser && currentUser.email.toLowerCase() === email.toLowerCase()) {
+                    currentUser.status = newStatus;
+                    renderPortalHome();
+                }
+
+                await renderAdminDashboard();
+                showAlert(`Estado de ${email} actualizado a ${newStatus}.`, 'success');
+            } catch (e) {
+                console.error("Error cambiando estado:", e);
+                showAlert('Error al actualizar estado en la base de datos.', 'error');
+            }
+        }
+
+        async function adminDeleteUser(email) {
+            if (!confirm(`¿Estás seguro de eliminar permanentemente la cuenta de ${email}?`)) return;
+            try {
+                await db.collection('usuarios').doc(email.trim().toLowerCase()).delete();
+                if (currentUser && currentUser.email.toLowerCase() === email.toLowerCase()) {
+                    logoutUser();
+                }
+                await renderAdminDashboard();
+                showAlert(`Usuario ${email} eliminado correctamente.`, 'success');
+            } catch (e) {
+                console.error("Error eliminando usuario:", e);
+                showAlert('Error al eliminar cuenta en Firebase.', 'error');
+            }
+        }
+
+        async function viewReceipt(email) {
+            try {
+                const docRef = db.collection('usuarios').doc(email.trim().toLowerCase());
+                const doc = await docRef.get();
+                if (doc.exists && doc.data().receipt) {
+                    document.getElementById('receipt-modal-img').src = doc.data().receipt;
+                    document.getElementById('modal-receipt-view').classList.remove('hidden');
+                } else {
+                    showAlert('No hay comprobante guardado para este usuario.', 'error');
+                }
+            } catch (e) {
+                console.error("Error viendo comprobante:", e);
+                showAlert('Error al cargar la imagen del comprobante.', 'error');
+            }
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('modal-receipt-view').classList.add('hidden');
+        }
+
+        async function exportData() {
+            try {
+                const snapshot = await db.collection('usuarios').get();
+                let users = [];
+                snapshot.forEach(doc => users.push(doc.data()));
+
+                const dataStr = JSON.stringify(users, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `jovenes_en_accion_firestore_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+            } catch (e) {
+                console.error("Error exportando:", e);
+            }
+        }
+
+        function startSocialProofWidget() {
+            const toast = document.getElementById('social-proof-toast');
+            const proofText = document.getElementById('proof-text');
+            const proofAmount = document.getElementById('proof-amount');
+
+            setInterval(() => {
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * diverseSimulations.length);
+                } while (randomIndex === lastSimulationIndex && diverseSimulations.length > 1);
+                
+                lastSimulationIndex = randomIndex;
+                const randomSim = diverseSimulations[randomIndex];
+
+                proofText.textContent = `${randomSim.name} (${randomSim.city})`;
+                proofAmount.textContent = `Inscripción Aprobada ${randomSim.amount}`;
+
+                toast.classList.remove('hidden', 'toast-exit');
+                toast.classList.add('toast-enter');
+
+                setTimeout(() => {
+                    toast.classList.remove('toast-enter');
+                    toast.classList.add('toast-exit');
+                }, 4500);
+            }, 9000);
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem(STORAGE_KEY_ACTIVE_SESSION);
+            updateSessionBadge();
+            goToStep(1);
+            document.getElementById('form-register').reset();
+            document.getElementById('form-login').reset();
+        }
+
+        function showAlert(msg, type = 'info') {
+            const box = document.getElementById('alert-box');
+            const message = document.getElementById('alert-message');
+            const icon = document.getElementById('alert-icon');
+
+            message.textContent = msg;
+            box.classList.remove('hidden', 'bg-red-50', 'border-red-200', 'text-red-700', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-700', 'bg-blue-50', 'border-blue-200', 'text-blue-700');
+
+            if (type === 'error') {
+                box.classList.add('bg-red-50', 'border-red-200', 'text-red-700');
+                icon.className = 'fa-solid fa-circle-exclamation text-red-500';
+            } else if (type === 'success') {
+                box.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+                icon.className = 'fa-solid fa-circle-check text-emerald-500';
+            } else {
+                box.classList.add('bg-blue-50', 'border-blue-200', 'text-blue-700');
+                icon.className = 'fa-solid fa-circle-info text-blue-500';
+            }
+        }
+
+        function closeAlert() {
+            document.getElementById('alert-box').classList.add('hidden');
+        }
+    </script>
+</body>
+      </html>
