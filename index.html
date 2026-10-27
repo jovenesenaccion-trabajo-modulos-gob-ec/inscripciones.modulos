@@ -1024,10 +1024,8 @@
             { name: "Mateo R.", city: "Colimes", amount: "$3,49 USDT" }
         ];
 
-        let currentStep = 1;
         let currentUser = null;
         let isAdminLoggedIn = false;
-        let uploadedReceiptBase64 = null;
         let portalUploadedReceiptBase64 = null;
         let logoTapCount = 0;
         let logoTapTimer = null;
@@ -1035,7 +1033,6 @@
         let shuffleIndexPointer = 0;
 
         window.onload = function() {
-            loadProvinces();
             loadPortalProvinces();
             setupKeyboardShortcuts();
             initShuffledIndices();
@@ -1148,17 +1145,6 @@
             }
         }
 
-        function loadProvinces() {
-            const selectProv = document.getElementById('select-province');
-            if (!selectProv) return;
-            Object.keys(ecuadorLocations).sort().forEach(prov => {
-                const opt = document.createElement('option');
-                opt.value = prov;
-                opt.textContent = prov;
-                selectProv.appendChild(opt);
-            });
-        }
-
         function loadPortalProvinces() {
             const selectProv = document.getElementById('portal-select-province');
             if (!selectProv) return;
@@ -1169,26 +1155,6 @@
                 opt.textContent = prov;
                 selectProv.appendChild(opt);
             });
-        }
-
-        function handleProvinceChange() {
-            const selectProv = document.getElementById('select-province');
-            const selectCanton = document.getElementById('select-canton');
-            const selectedProv = selectProv.value;
-
-            selectCanton.innerHTML = '<option value="" disabled selected>-- Seleccione Cantón --</option>';
-            if (selectedProv && ecuadorLocations[selectedProv]) {
-                selectCanton.disabled = false;
-                selectCanton.classList.remove('bg-slate-50', 'cursor-not-allowed');
-                selectCanton.classList.add('bg-white');
-
-                ecuadorLocations[selectedProv].sort().forEach(canton => {
-                    const opt = document.createElement('option');
-                    opt.value = canton;
-                    opt.textContent = canton;
-                    selectCanton.appendChild(opt);
-                });
-            }
         }
 
         function handlePortalProvinceChange() {
@@ -1325,8 +1291,18 @@
                 localStorage.setItem(STORAGE_KEY_ACTIVE_SESSION, currentUser.email);
                 updateSessionBadge();
 
-                showAlert('¡Registro completado! Continúa al Paso 2.', 'success');
-                goToStep(2);
+                showAlert('¡Cuenta creada con éxito! Bienvenido a tu Portal.', 'success');
+                
+                docRef.onSnapshot((updatedDoc) => {
+                    if (updatedDoc.exists) {
+                        currentUser = updatedDoc.data();
+                        if (document.getElementById('student-portal-content') && !document.getElementById('student-portal-content').classList.contains('hidden')) {
+                            renderPortalHome();
+                        }
+                    }
+                });
+
+                openStudentPortal();
             } catch (err) {
                 console.error("Error en registro:", err);
                 showAlert('Error de conexión con la nube.', 'error');
@@ -1373,21 +1349,6 @@
             }
         }
 
-        async function handleLocationSubmit(e) {
-            e.preventDefault();
-            const province = document.getElementById('select-province').value;
-            const canton = document.getElementById('select-canton').value;
-
-            if (currentUser) {
-                currentUser.province = province;
-                currentUser.canton = canton;
-                currentUser.completedStep = 2;
-                await updateCurrentUserDataInCloud();
-            }
-
-            goToStep(3);
-        }
-
         async function updateCurrentUserDataInCloud() {
             if (!currentUser) return;
             try {
@@ -1395,28 +1356,6 @@
             } catch (e) {
                 console.error("Error actualizando en nube:", e);
                 showAlert('Error al guardar en la base de datos.', 'error');
-            }
-        }
-
-        function copyWalletAddress() {
-            const copyText = document.getElementById("wallet-address");
-            copyText.select();
-            document.execCommand("copy");
-            const btnText = document.getElementById('copy-btn-text');
-            btnText.textContent = "¡Copiado!";
-            setTimeout(() => { btnText.textContent = "Copiar"; }, 2000);
-        }
-
-        function handleFilePreview(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedReceiptBase64 = e.target.result;
-                    document.getElementById('receipt-upload-placeholder').classList.add('hidden');
-                    document.getElementById('receipt-upload-success').classList.remove('hidden');
-                    document.getElementById('receipt-file-name').textContent = input.files[0].name;
-                };
-                reader.readAsDataURL(input.files[0]);
             }
         }
 
@@ -1433,24 +1372,6 @@
             }
         }
 
-        async function handleUsdtPaymentSubmit(e) {
-            e.preventDefault();
-            if (!uploadedReceiptBase64) {
-                showAlert('Por favor adjunta la captura de tu comprobante de pago.', 'error');
-                return;
-            }
-
-            if (currentUser) {
-                currentUser.status = 'EnVerificacion';
-                currentUser.receipt = uploadedReceiptBase64;
-                currentUser.completedStep = 3;
-                await updateCurrentUserDataInCloud();
-            }
-
-            showAlert('Comprobante enviado. Ingresando a tu Portal de Estudiante...', 'success');
-            openStudentPortal();
-        }
-
         async function handlePortalResubmitPayment(e) {
             e.preventDefault();
             if (!portalUploadedReceiptBase64) {
@@ -1464,15 +1385,12 @@
                 await updateCurrentUserDataInCloud();
             }
 
-            showAlert('Comprobante reenviado correctamente. Quedando en revisión.', 'success');
+            showAlert('Comprobante enviado correctamente. Quedando en revisión.', 'success');
             renderPortalHome();
         }
 
         function openStudentPortal() {
-            
             document.getElementById('step-1-content').classList.add('hidden');
-            document.getElementById('step-2-content').classList.add('hidden');
-            document.getElementById('step-3-content').classList.add('hidden');
             document.getElementById('student-portal-content').classList.remove('hidden');
 
             const fullName = (currentUser.nombre || currentUser.apellido) ? `${currentUser.nombre || ''} ${currentUser.apellido || ''}` : currentUser.email;
@@ -1718,26 +1636,6 @@
             renderPortalHome();
         }
 
-        function goToStep(step) {
-            currentStep = step;
-            
-
-            document.getElementById('student-portal-content').classList.add('hidden');
-            
-
-            document.getElementById('step-1-content').classList.add('hidden');
-            document.getElementById('step-2-content').classList.add('hidden');
-            document.getElementById('step-3-content').classList.add('hidden');
-
-            if (step === 1) document.getElementById('step-1-content').classList.remove('hidden');
-            if (step === 2) document.getElementById('step-2-content').classList.remove('hidden');
-            if (step === 3) document.getElementById('step-3-content').classList.remove('hidden');
-        }
-
-        
-
-        
-
         async function renderAdminDashboard() {
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
@@ -1922,7 +1820,8 @@
             currentUser = null;
             localStorage.removeItem(STORAGE_KEY_ACTIVE_SESSION);
             updateSessionBadge();
-            goToStep(1);
+            document.getElementById('student-portal-content').classList.add('hidden');
+            document.getElementById('step-1-content').classList.remove('hidden');
             document.getElementById('form-register').reset();
             document.getElementById('form-login').reset();
         }
