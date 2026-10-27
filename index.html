@@ -108,30 +108,7 @@
         </div>
     </header>
 
-    <!-- STEP TRACKER -->
-    <section id="step-tracker-section" class="bg-white border-b border-slate-200 shadow-inner py-6 px-4">
-        <div class="max-w-3xl mx-auto">
-            <div class="relative flex items-center justify-between">
-                <div class="absolute top-1/2 left-0 w-full -translate-y-1/2 h-1 bg-slate-200 -z-0"></div>
-                <div id="progress-line" class="absolute top-1/2 left-0 -translate-y-1/2 h-1 bg-brand-blue transition-all duration-500 -z-0" style="width: 0%;"></div>
 
-                <div class="relative z-10 flex flex-col items-center">
-                    <div id="badge-step-1" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 step-active shadow-sm">1</div>
-                    <span id="text-step-1" class="text-xs font-semibold mt-2 text-brand-blue">1. Registro</span>
-                </div>
-
-                <div class="relative z-10 flex flex-col items-center">
-                    <div id="badge-step-2" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 step-pending shadow-sm">2</div>
-                    <span id="text-step-2" class="text-xs font-medium mt-2 text-slate-500">2. Ubicación</span>
-                </div>
-
-                <div class="relative z-10 flex flex-col items-center">
-                    <div id="badge-step-3" class="w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 step-pending shadow-sm">3</div>
-                    <span id="text-step-3" class="text-xs font-medium mt-2 text-slate-500">3. Pago USDT</span>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
@@ -160,10 +137,7 @@
                 </div>
 
                 <div id="form-register-container" class="p-6 sm:p-8">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-bold text-slate-800">Inscripción Tardía - Paso 1 de 3</h2>
-                        <p class="text-xs text-slate-500 mt-1">Ingresa tus datos personales y correo único para quedar registrado.</p>
-                    </div>
+                    
 
                     <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -235,7 +209,7 @@
 
                         <div class="pt-2">
                             <button type="submit" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs">
-                                <span>Registrar y Pasar al Paso 2</span>
+                                <span>Crear Cuenta</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
@@ -274,7 +248,7 @@
 
                         <button type="submit" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-right-to-bracket text-xs"></i>
-                            <span>Ingresar al Sistema</span>
+                            <span>Iniciar Sesión</span>
                         </button>
                     </form>
                 </div>
@@ -285,11 +259,9 @@
         <div id="step-2-content" class="hidden fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 sm:p-8 max-w-xl mx-auto space-y-6">
                 <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-brand-blue bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                        Paso 2 de 3
-                    </span>
-                    <h2 class="text-2xl font-black text-slate-800 mt-3">Lugar de Residencia en Ecuador</h2>
-                    <p class="text-xs text-slate-500 mt-1">Selecciona tu provincia y cantón para asignar la acreditación territorial.</p>
+                    
+                    <h2 class="text-2xl font-black text-slate-800 mt-3 text-center">Lugar de Residencia en Ecuador</h2>
+                    <p class="text-xs text-slate-500 mt-1 text-center">Selecciona tu provincia y cantón para asignar la acreditación territorial.</p>
                 </div>
 
                 <form id="form-location" onsubmit="handleLocationSubmit(event)" class="space-y-5">
@@ -323,10 +295,8 @@
         <!-- PASO 3: PAGO USDT -->
         <div id="step-3-content" class="hidden fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden max-w-2xl mx-auto">
-                <div class="bg-gradient-to-r from-brand-blue to-brand-lightBlue text-white p-6 sm:p-8">
-                    <span class="text-xs font-bold uppercase tracking-wider bg-white/20 text-white px-3 py-1 rounded-full border border-white/20">
-                        Paso Final - Paso 3
-                    </span>
+                <div class="bg-gradient-to-r from-brand-blue to-brand-lightBlue text-white p-6 sm:p-8 text-center">
+                    
                     <h2 class="text-2xl font-black mt-3">Pago de $3,49 USDT - Aprobación de Acreditación</h2>
                     <p class="text-xs text-blue-100 mt-1">Realiza la transferencia en criptomoneda USDT a la wallet oficial indicada a continuación.</p>
                 </div>
@@ -1499,7 +1469,7 @@
         }
 
         function openStudentPortal() {
-            document.getElementById('step-tracker-section').classList.add('hidden');
+            
             document.getElementById('step-1-content').classList.add('hidden');
             document.getElementById('step-2-content').classList.add('hidden');
             document.getElementById('step-3-content').classList.add('hidden');
@@ -1750,10 +1720,10 @@
 
         function goToStep(step) {
             currentStep = step;
-            updateStepUI(step);
+            
 
             document.getElementById('student-portal-content').classList.add('hidden');
-            document.getElementById('step-tracker-section').classList.remove('hidden');
+            
 
             document.getElementById('step-1-content').classList.add('hidden');
             document.getElementById('step-2-content').classList.add('hidden');
@@ -1764,44 +1734,9 @@
             if (step === 3) document.getElementById('step-3-content').classList.remove('hidden');
         }
 
-        function updateStepUI(step) {
-            const line = document.getElementById('progress-line');
-            if (step === 1) {
-                line.style.width = '0%';
-                setStepStyle('badge-step-1', 'text-step-1', 'active');
-                setStepStyle('badge-step-2', 'text-step-2', 'pending');
-                setStepStyle('badge-step-3', 'text-step-3', 'pending');
-            } else if (step === 2) {
-                line.style.width = '50%';
-                setStepStyle('badge-step-1', 'text-step-1', 'completed');
-                setStepStyle('badge-step-2', 'text-step-2', 'active');
-                setStepStyle('badge-step-3', 'text-step-3', 'pending');
-            } else if (step === 3) {
-                line.style.width = '100%';
-                setStepStyle('badge-step-1', 'text-step-1', 'completed');
-                setStepStyle('badge-step-2', 'text-step-2', 'completed');
-                setStepStyle('badge-step-3', 'text-step-3', 'active');
-            }
-        }
+        
 
-        function setStepStyle(badgeId, textId, state) {
-            const badge = document.getElementById(badgeId);
-            const text = document.getElementById(textId);
-            badge.className = "w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-sm ";
-            text.className = "text-xs font-semibold mt-2 ";
-
-            if (state === 'active') {
-                badge.classList.add('step-active');
-                text.classList.add('text-brand-blue');
-            } else if (state === 'completed') {
-                badge.classList.add('step-completed');
-                badge.innerHTML = '<i class="fa-solid fa-check"></i>';
-                text.classList.add('text-brand-green');
-            } else {
-                badge.classList.add('step-pending');
-                text.classList.add('text-slate-500');
-            }
-        }
+        
 
         async function renderAdminDashboard() {
             const tbody = document.getElementById('admin-table-body');
