@@ -605,49 +605,57 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2 pt-2 border-t border-slate-100">
-                            <span class="text-[11px] font-bold text-slate-700 uppercase block">Selecciona tus módulos de interés:</span>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Infraestructura Vial" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Infraestructura Vial</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Vivienda Social" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Vivienda Social y Familiar</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Gestion de Riesgos" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Gestión de Riesgos ante Contingencias Climáticas y Fenómeno de El Niño</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Salud Ciudadana" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Salud Ciudadana</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Educacion Deporte Cultura" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Educación, Deporte y Cultura</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Ambiente y Conservacion" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Ambiente y Conservación</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Desarrollo Economico" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Desarrollo Económico y Productivo</span>
-                                </label>
-                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <input type="checkbox" name="mod_list" value="Gestion Institucional" class="rounded text-brand-blue focus:ring-brand-blue">
-                                    <span>Módulo de Gestión Institucional y Apoyo de Campo</span>
-                                </label>
+                        <div id="modules-selection-container" class="space-y-4 pt-2 border-t border-slate-100">
+                            <div id="modules-form-wrapper">
+                                <span class="text-[11px] font-bold text-slate-700 uppercase block">Selecciona tu módulo de interés (Solo 1 opción):</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Infraestructura Vial" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Infraestructura Vial</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Vivienda Social" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Vivienda Social y Familiar</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Gestion de Riesgos" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Gestión de Riesgos ante Contingencias Climáticas y Fenómeno de El Niño</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Salud Ciudadana" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Salud Ciudadana</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Educacion Deporte Cultura" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Educación, Deporte y Cultura</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Ambiente y Conservacion" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Ambiente y Conservación</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Desarrollo Economico" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Desarrollo Económico y Productivo</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <input type="radio" name="mod_list" value="Gestion Institucional" class="text-brand-blue focus:ring-brand-blue">
+                                        <span>Módulo de Gestión Institucional y Apoyo de Campo</span>
+                                    </label>
+                                </div>
+                                <div class="pt-4">
+                                    <button type="button" onclick="saveModulesSelection()" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow transition text-xs flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                        <span>Guardar Selección de Módulos</span>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="pt-4">
-                            <button type="button" onclick="saveModulesSelection()" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow transition text-xs flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-floppy-disk"></i>
-                                <span>Guardar Selección de Módulos</span>
-                            </button>
+                            <div id="modules-locked-message" class="hidden p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs space-y-2">
+                                <div class="flex items-center gap-2 font-bold text-sm">
+                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                    <span>Modulo elegido: <span id="selected-module-name-display" class="underline"></span></span>
+                                </div>
+                                <p class="text-emerald-800 font-medium">Espere asignaciones y acreditación.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -1742,23 +1750,36 @@
         }
 
         function populateModulesSelection() {
-            if (currentUser && currentUser.modulesSelection) {
-                const checkboxes = document.querySelectorAll('input[name="mod_list"]');
-                checkboxes.forEach(cb => {
-                    cb.checked = currentUser.modulesSelection.includes(cb.value);
-                });
+            const formWrapper = document.getElementById('modules-form-wrapper');
+            const lockedMsg = document.getElementById('modules-locked-message');
+            const nameDisplay = document.getElementById('selected-module-name-display');
+
+            if (currentUser && currentUser.modulesSelection && currentUser.modulesSelection.length > 0) {
+                formWrapper.classList.add('hidden');
+                lockedMsg.classList.remove('hidden');
+                nameDisplay.textContent = currentUser.modulesSelection[0];
+            } else {
+                formWrapper.classList.remove('hidden');
+                lockedMsg.classList.add('hidden');
+                const radios = document.querySelectorAll('input[name="mod_list"]');
+                radios.forEach(r => r.checked = false);
             }
         }
 
         async function saveModulesSelection() {
-            const checkboxes = document.querySelectorAll('input[name="mod_list"]:checked');
-            const selectedValues = Array.from(checkboxes).map(cb => cb.value);
+            const selectedRadio = document.querySelector('input[name="mod_list"]:checked');
+            if (!selectedRadio) {
+                showAlert('Por favor selecciona 1 módulo antes de guardar.', 'error');
+                return;
+            }
+
+            const selectedValue = selectedRadio.value;
 
             if (currentUser) {
-                currentUser.modulesSelection = selectedValues;
+                currentUser.modulesSelection = [selectedValue];
                 await updateCurrentUserDataInCloud();
                 showAlert('Selección de módulos guardada correctamente.', 'success');
-                switchPortalTab('home');
+                populateModulesSelection();
             }
         }
 
