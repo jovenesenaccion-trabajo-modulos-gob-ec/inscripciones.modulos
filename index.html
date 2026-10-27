@@ -403,6 +403,9 @@
                     <button id="tab-portal-home" onclick="switchPortalTab('home')" class="py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition">
                         <i class="fa-solid fa-house mr-2"></i>Inicio / Estado
                     </button>
+                    <button id="tab-portal-modules" onclick="switchPortalTab('modules')" class="py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition">
+                        <i class="fa-solid fa-book-open mr-2"></i>Módulos Habilitados
+                    </button>
                     <button id="tab-portal-location" onclick="switchPortalTab('location')" class="py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition">
                         <i class="fa-solid fa-location-dot mr-2"></i>Modificar Ubicación
                     </button>
@@ -478,6 +481,139 @@
                                     <span>Enviar Comprobante de Pago</span>
                                 </button>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- TAB MÓDULOS HABILITADOS -->
+                    <div id="portal-tab-modules-content" class="hidden space-y-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Módulos Habilitados y Opciones Académicas</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Selecciona y gestiona tus áreas y opciones disponibles según tu perfil de acreditación.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Módulo 1 -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4 hover:border-brand-blue transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-3 bg-blue-50 text-brand-blue rounded-xl text-xl">
+                                        <i class="fa-solid fa-laptop-code"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-brand-blue bg-blue-50 px-2 py-0.5 rounded uppercase">Área Tecnológica</span>
+                                        <h4 class="font-extrabold text-slate-800 text-base">Módulo I: Desarrollo Software & Web3</h4>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">Formación avanzada en automatización, trading algorítmico y despliegue de aplicaciones descentralizadas.</p>
+                                <div class="space-y-2 pt-2 border-t border-slate-100">
+                                    <span class="text-[11px] font-bold text-slate-700 uppercase block">Opciones de Especialización:</span>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod1_opt" value="MQL5" class="rounded text-brand-blue focus:ring-brand-blue">
+                                        <span>Especialización MQL5 & Expert Advisors</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod1_opt" value="Web3" class="rounded text-brand-blue focus:ring-brand-blue">
+                                        <span>Desarrollo de Contratos Inteligentes Web3</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod1_opt" value="Bots" class="rounded text-brand-blue focus:ring-brand-blue">
+                                        <span>Automatización de Bots de Telegram</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Módulo 2 -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4 hover:border-brand-blue transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-3 bg-emerald-50 text-brand-green rounded-xl text-xl">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-brand-green bg-emerald-50 px-2 py-0.5 rounded uppercase">Área Financiera</span>
+                                        <h4 class="font-extrabold text-slate-800 text-base">Módulo II: Mercados Financieros & Arbitraje</h4>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">Gestión de riesgos, análisis de mercados internacionales y estrategias avanzadas de arbitraje con criptoactivos.</p>
+                                <div class="space-y-2 pt-2 border-t border-slate-100">
+                                    <span class="text-[11px] font-bold text-slate-700 uppercase block">Opciones de Especialización:</span>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod2_opt" value="Gold" class="rounded text-brand-green focus:ring-brand-green">
+                                        <span>Estrategias de Alta Frecuencia en Oro (XAUUSD)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod2_opt" value="Solana" class="rounded text-brand-green focus:ring-brand-green">
+                                        <span>Trading Automatizado en Redes de Alta Velocidad (Solana)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod2_opt" value="Risk" class="rounded text-brand-green focus:ring-brand-green">
+                                        <span>Gestión de Riesgo y Control de Stop-Loss</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Módulo 3 -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4 hover:border-brand-blue transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-3 bg-amber-50 text-amber-600 rounded-xl text-xl">
+                                        <i class="fa-solid fa-video"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded uppercase">Área Digital</span>
+                                        <h4 class="font-extrabold text-slate-800 text-base">Módulo III: Producción Multimedia & Medios</h4>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">Gestión de marcas digitales, producción de contenidos multimedia de alta gama y estrategias de posicionamiento.</p>
+                                <div class="space-y-2 pt-2 border-t border-slate-100">
+                                    <span class="text-[11px] font-bold text-slate-700 uppercase block">Opciones de Especialización:</span>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod3_opt" value="LuxeRevive" class="rounded text-amber-600 focus:ring-amber-500">
+                                        <span>Edición y Restauración 3D (LuxeRevive)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod3_opt" value="DarkMonst" class="rounded text-amber-600 focus:ring-amber-500">
+                                        <span>Curaduría de Arte Digital y Surrealismo (DARK MONST)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod3_opt" value="Audio" class="rounded text-amber-600 focus:ring-amber-500">
+                                        <span>Producción Musical Urbana & Estética Sonora</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Módulo 4 -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4 hover:border-brand-blue transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-3 bg-purple-50 text-purple-600 rounded-xl text-xl">
+                                        <i class="fa-solid fa-bullhorn"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded uppercase">Área Emprendimiento</span>
+                                        <h4 class="font-extrabold text-slate-800 text-base">Módulo IV: Gestión de Negocios & iGaming</h4>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">Arquitectura de plataformas de micro-entretenimiento, gestión de pasarelas de pago y automatización de salas USDT.</p>
+                                <div class="space-y-2 pt-2 border-t border-slate-100">
+                                    <span class="text-[11px] font-bold text-slate-700 uppercase block">Opciones de Especialización:</span>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod4_opt" value="GlobalCash" class="rounded text-purple-600 focus:ring-purple-500">
+                                        <span>Arquitectura de Plataformas iGaming (Global Cash Time)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod4_opt" value="USDT" class="rounded text-purple-600 focus:ring-purple-500">
+                                        <span>Dispersiones Automáticas USDT (SPL / TRC20)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" name="mod4_opt" value="Community" class="rounded text-purple-600 focus:ring-purple-500">
+                                        <span>Administración de Comunidades y Soporte en Telegram</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="button" onclick="saveModulesSelection()" class="w-full bg-brand-blue hover:bg-blue-900 text-white font-bold py-3.5 rounded-xl shadow transition text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Guardar Selección de Módulos</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1426,6 +1562,7 @@
                     status: 'Pendiente',
                     receipt: null,
                     bankAccount: null,
+                    modulesSelection: [],
                     locationModifiedCount: 0,
                     date: new Date().toLocaleString('es-EC')
                 };
@@ -1596,24 +1733,32 @@
 
         function switchPortalTab(tab) {
             const homeBtn = document.getElementById('tab-portal-home');
+            const modulesBtn = document.getElementById('tab-portal-modules');
             const locationBtn = document.getElementById('tab-portal-location');
             const bankBtn = document.getElementById('tab-portal-bank');
 
             const homeContent = document.getElementById('portal-tab-home-content');
+            const modulesContent = document.getElementById('portal-tab-modules-content');
             const locationContent = document.getElementById('portal-tab-location-content');
             const bankContent = document.getElementById('portal-tab-bank-content');
 
             homeContent.classList.add('hidden');
+            modulesContent.classList.add('hidden');
             locationContent.classList.add('hidden');
             bankContent.classList.add('hidden');
 
             homeBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
+            if(modulesBtn) modulesBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
             if(locationBtn) locationBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
             bankBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-slate-500 hover:text-brand-blue whitespace-nowrap transition";
 
             if (tab === 'home') {
                 homeContent.classList.remove('hidden');
                 homeBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
+            } else if (tab === 'modules') {
+                modulesContent.classList.remove('hidden');
+                if(modulesBtn) modulesBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
+                populateModulesSelection();
             } else if (tab === 'location') {
                 locationContent.classList.remove('hidden');
                 if(locationBtn) locationBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
@@ -1622,6 +1767,27 @@
                 bankContent.classList.remove('hidden');
                 bankBtn.className = "py-3.5 px-6 font-bold text-xs sm:text-sm text-brand-blue border-b-2 border-brand-blue bg-white whitespace-nowrap transition";
                 populateBankForm();
+            }
+        }
+
+        function populateModulesSelection() {
+            if (currentUser && currentUser.modulesSelection) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = currentUser.modulesSelection.includes(cb.value);
+                });
+            }
+        }
+
+        async function saveModulesSelection() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const selectedValues = Array.from(checkboxes).map(cb => cb.value);
+
+            if (currentUser) {
+                currentUser.modulesSelection = selectedValues;
+                await updateCurrentUserDataInCloud();
+                showAlert('Selección de módulos guardada correctamente.', 'success');
+                switchPortalTab('home');
             }
         }
 
