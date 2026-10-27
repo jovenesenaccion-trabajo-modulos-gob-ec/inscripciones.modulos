@@ -70,9 +70,9 @@
                 <span class="text-[10px] tracking-widest font-semibold text-blue-200 bg-white/10 px-2 py-0.5 rounded">EN ACCIÓN</span>
             </div>
             <div class="flex items-center justify-center space-x-2 text-xs text-blue-100 font-medium">
-                <span>Cupos de módulos disponibles 23.000 cupos<span>
-           <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                </span>Inscripciones hasta el 28 de Octubre</span>
+                <span>Cupos de módulos disponibles 23.000 cupos</span>
+                <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Inscripciones hasta el 28 de Octubre</span>
             </div>
         </div>
     </div>
@@ -193,7 +193,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                                     <i class="fa-solid fa-id-card"></i>
                                 </span>
-                                <input type="text" id="reg-cedula" required maxlength="10" placeholder="Ej: 1712345678" onblur="checkCedulaExistsOnBlur(this.value)" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <input type="text" id="reg-cedula" required maxlength="10" placeholder="Ingresa tu número de cédula" onblur="checkCedulaExistsOnBlur(this.value)" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
                             </div>
                         </div>
 
@@ -203,7 +203,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                                     <i class="fa-solid fa-envelope"></i>
                                 </span>
-                                <input type="email" id="reg-email" required placeholder="ejemplo@correo.com" onblur="checkEmailExistsOnBlur(this.value)" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <input type="email" id="reg-email" required placeholder="Ingresa tu correo" onblur="checkEmailExistsOnBlur(this.value)" class="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
                             </div>
                         </div>
 
@@ -213,7 +213,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                                     <i class="fa-solid fa-lock"></i>
                                 </span>
-                                <input type="password" id="reg-password" required placeholder="Ejemplo123!" class="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <input type="password" id="reg-password" required placeholder="Ingresa tu contraseña" class="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
                                 <button type="button" onclick="togglePasswordVisibility('reg-password', 'reg-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600">
                                     <i id="reg-eye-icon" class="fa-solid fa-eye"></i>
                                 </button>
@@ -226,7 +226,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                                     <i class="fa-solid fa-shield"></i>
                                 </span>
-                                <input type="password" id="reg-confirm-password" required placeholder="Ejemplo123!" class="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <input type="password" id="reg-confirm-password" required placeholder="Retipe tu contraseña" class="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
                                 <button type="button" onclick="togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600">
                                     <i id="reg-confirm-eye-icon" class="fa-solid fa-eye"></i>
                                 </button>
@@ -255,7 +255,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                                     <i class="fa-solid fa-user"></i>
                                 </span>
-                                <input type="text" id="login-email" required placeholder="tu@correo.com" class="w-full pl-10 pr-4 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <input type="text" id="login-email" required placeholder="Ingresa tu correo" class="w-full pl-10 pr-4 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
                             </div>
                         </div>
 
@@ -265,7 +265,7 @@
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                                     <i class="fa-solid fa-lock"></i>
                                 </span>
-                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
+                                <input type="password" id="login-password" required placeholder="Ingresa tu contraseña" class="w-full pl-10 pr-10 py-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue transition">
                                 <button type="button" onclick="togglePasswordVisibility('login-password', 'login-eye-icon')" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600">
                                     <i id="login-eye-icon" class="fa-solid fa-eye"></i>
                                 </button>
@@ -1029,7 +1029,72 @@
             { name: "Joffre O.", city: "Guano", amount: "$7,49 USDT" },
             { name: "Sheyla K.", city: "Pallatanga", amount: "$7,49 USDT" },
             { name: "Alex Q.", city: "Penipe", amount: "$7,49 USDT" },
-            { name: "Jennifer W.", city: "Cumandá", amount: "$7,49 USDT" }
+            { name: "Jennifer W.", city: "Cumandá", amount: "$7,49 USDT" },
+            { name: "Bryan Q.", city: "Ambato", amount: "$7,49 USDT" },
+            { name: "Estefany K.", city: "Baños de Agua Santa", amount: "$7,49 USDT" },
+            { name: "Jairo W.", city: "Cevallos", amount: "$7,49 USDT" },
+            { name: "Melanny E.", city: "Mocha", amount: "$7,49 USDT" },
+            { name: "Stalin R.", city: "Patate", amount: "$7,49 USDT" },
+            { name: "Dayanna T.", city: "Quero", amount: "$7,49 USDT" },
+            { name: "Jhostin M.", city: "San Pedro de Pelileo", amount: "$7,49 USDT" },
+            { name: "Gema P.", city: "Santiago de Píllaro", amount: "$7,49 USDT" },
+            { name: "Anthony S.", city: "Tisaleo", amount: "$7,49 USDT" },
+            { name: "Lizeth V.", city: "Zamora", amount: "$7,49 USDT" },
+            { name: "Anderson C.", city: "Chinchipe", amount: "$7,49 USDT" },
+            { name: "Kerly N.", city: "Yacuambi", amount: "$7,49 USDT" },
+            { name: "Jefferson L.", city: "Yantzaza", amount: "$7,49 USDT" },
+            { name: "Mishell D.", city: "El Pangui", amount: "$7,49 USDT" },
+            { name: "Jhosue F.", city: "Palanda", amount: "$7,49 USDT" },
+            { name: "Katerine B.", city: "Paquisha", amount: "$7,49 USDT" },
+            { name: "Yandry G.", city: "San Cristóbal", amount: "$7,49 USDT" },
+            { name: "Anahis Z.", city: "Santa Cruz", amount: "$7,49 USDT" },
+            { name: "Jhostyn X.", city: "San Lorenzo", amount: "$7,49 USDT" },
+            { name: "Erickson H.", city: "Atacames", amount: "$7,49 USDT" },
+            { name: "Yomaira J.", city: "Eloy Alfaro", amount: "$7,49 USDT" },
+            { name: "Jhoel K.", city: "Muisne", amount: "$7,49 USDT" },
+            { name: "Marilin Q.", city: "Quinindé", amount: "$7,49 USDT" },
+            { name: "Deyvid W.", city: "Rioverde", amount: "$7,49 USDT" },
+            { name: "Shackira Y.", city: "Macas", amount: "$7,49 USDT" },
+            { name: "Jostin F.", city: "Gualaquiza", amount: "$7,49 USDT" },
+            { name: "Génesis D.", city: "Limón Indanza", amount: "$7,49 USDT" },
+            { name: "Stalin C.", city: "Palora", amount: "$7,49 USDT" },
+            { name: "Kerly V.", city: "Santiago", amount: "$7,49 USDT" },
+            { name: "Deyvid M.", city: "Sucúa", amount: "$7,49 USDT" },
+            { name: "Milena P.", city: "Huamboya", amount: "$7,49 USDT" },
+            { name: "Ronny K.", city: "San Juan Bosco", amount: "$7,49 USDT" },
+            { name: "Brigitte J.", city: "Taisha", amount: "$7,49 USDT" },
+            { name: "Erick S.", city: "Logroño", amount: "$7,49 USDT" },
+            { name: "Nayeli G.", city: "Pablo Sexto", amount: "$7,49 USDT" },
+            { name: "Jair L.", city: "Tiwintza", amount: "$7,49 USDT" },
+            { name: "Yoselin T.", city: "Tena", amount: "$7,49 USDT" },
+            { name: "Anthony R.", city: "Archidona", amount: "$7,49 USDT" },
+            { name: "Gisela E.", city: "El Chaco", amount: "$7,49 USDT" },
+            { name: "Adán A.", city: "Quijos", amount: "$7,49 USDT" },
+            { name: "Ariana I.", city: "Carlos Julio Arosemena Tola", amount: "$7,49 USDT" },
+            { name: "Jerson U.", city: "Puerto Francisco de Orellana", amount: "$7,49 USDT" },
+            { name: "Melina O.", city: "Aguarico", amount: "$7,49 USDT" },
+            { name: "Damián K.", city: "La Joya de los Sachas", amount: "$7,49 USDT" },
+            { name: "Thalia Q.", city: "Loreto", amount: "$7,49 USDT" },
+            { name: "Wladimir W.", city: "Puyo", amount: "$7,49 USDT" },
+            { name: "Katerin Y.", city: "Arajuno", amount: "$7,49 USDT" },
+            { name: "Brandon H.", city: "Mera", amount: "$7,49 USDT" },
+            { name: "Samira F.", city: "Santa Clara", amount: "$7,49 USDT" },
+            { name: "Edison D.", city: "Quito", amount: "$7,49 USDT" },
+            { name: "Belén S.", city: "Cayambe", amount: "$7,49 USDT" },
+            { name: "Jhon X.", city: "Mejía", amount: "$7,49 USDT" },
+            { name: "Magaly Z.", city: "Pedro Moncayo", amount: "$7,49 USDT" },
+            { name: "Yandri C.", city: "Rumiñahui", amount: "$7,49 USDT" },
+            { name: "Esthefany V.", city: "San Miguel de Los Bancos", amount: "$7,49 USDT" },
+            { name: "Clever B.", city: "Pedro Vicente Maldonado", amount: "$7,49 USDT" },
+            { name: "Yessenia N.", city: "Puerto Quito", amount: "$7,49 USDT" },
+            { name: "Jhonatan M.", city: "Santa Elena", amount: "$7,49 USDT" },
+            { name: "Lizbeth P.", city: "La Libertad", amount: "$7,49 USDT" },
+            { name: "Darwin J.", city: "Salinas", amount: "$7,49 USDT" },
+            { name: "Gissela L.", city: "Santo Domingo", amount: "$7,49 USDT" },
+            { name: "Joffre G.", city: "La Concordia", amount: "$7,49 USDT" },
+            { name: "Sheyla T.", city: "Nueva Loja", amount: "$7,49 USDT" },
+            { name: "Alex E.", city: "Cascales", amount: "$7,49 USDT" },
+            { name: "Jennifer A.", city: "Cuyabeno", amount: "$7,49 USDT" }
         ];
 
         let currentStep = 1;
