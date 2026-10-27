@@ -2158,6 +2158,30 @@
             const proofText = document.getElementById('proof-text');
             const proofAmount = document.getElementById('proof-amount');
 
+            // Nombres comunes puros (sin iniciales de apellido) combinados exclusivamente con ciudades principales de Ecuador
+            const diverseSimulations = [
+                { name: "Carlos", city: "Guayaquil", amount: "$7,49 USDT" },
+                { name: "María", city: "Quito", amount: "$7,49 USDT" },
+                { name: "José", city: "Cuenca", amount: "$7,49 USDT" },
+                { name: "Ana", city: "Manta", amount: "$7,49 USDT" },
+                { name: "Luis", city: "Portoviejo", amount: "$7,49 USDT" },
+                { name: "Carmen", city: "Ambato", amount: "$7,49 USDT" },
+                { name: "Jorge", city: "Machala", amount: "$7,49 USDT" },
+                { name: "Rosa", city: "Santo Domingo", amount: "$7,49 USDT" },
+                { name: "David", city: "Loja", amount: "$7,49 USDT" },
+                { name: "Diana", city: "Riobamba", amount: "$7,49 USDT" },
+                { name: "Juan", city: "Ibarra", amount: "$7,49 USDT" },
+                { name: "Gabriela", city: "Esmeraldas", amount: "$7,49 USDT" },
+                { name: "Andrés", city: "Quevedo", amount: "$7,49 USDT" },
+                { name: "Patricia", city: "Babahoyo", amount: "$7,49 USDT" },
+                { name: "Fernando", city: "Latacunga", amount: "$7,49 USDT" },
+                { name: "Verónica", city: "Tulcán", amount: "$7,49 USDT" },
+                { name: "Mateo", city: "Milagro", amount: "$7,49 USDT" },
+                { name: "Daniela", city: "Daule", amount: "$7,49 USDT" },
+                { name: "Javier", city: "Durán", amount: "$7,49 USDT" },
+                { name: "Valeria", city: "Santa Elena", amount: "$7,49 USDT" }
+            ];
+
             setInterval(() => {
                 let randomIndex;
                 do {
